@@ -1,0 +1,18 @@
+# PHPStorm project forlder
+.idea
+
+# Environtment file
+.env
+
+# Distribution folder
+dist
+
+# npm modules
+node_modules
+
+yarn-error.log
+
+package-lock.json
+package-error.log
+
+*.DS_Store
