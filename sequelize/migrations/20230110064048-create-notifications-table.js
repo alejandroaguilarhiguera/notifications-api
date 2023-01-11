@@ -29,5 +29,5 @@ module.exports = {
       { charset: "utf8" }
     ),
 
-  down: (queryInterfaces) => queryInterfaces.dropTable("Roles"),
+  down: (queryInterfaces) => queryInterfaces.dropTable("Notifications"),
 };

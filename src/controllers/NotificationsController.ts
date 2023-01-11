@@ -30,7 +30,7 @@ import joiValidation from "../middlewares/joiValidation";
   async function loadCollection(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const { id } = req.params;
     if (id) {
