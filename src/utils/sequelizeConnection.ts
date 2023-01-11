@@ -12,7 +12,7 @@ export default function sequelizeConnection(): Promise<void | Sequelize> {
     .then(() => {
       if (process.env.NODE_ENV !== "test") {
         console.info(
-          chalk.bold.blue(">> Connection has been established successfully.")
+          chalk.bold.blue(">> Connection has been established successfully."),
         );
       }
       return sequelize;

@@ -8,7 +8,7 @@ import controllers from "../controllers";
 export default function controllersToRoutes(
   router: Router,
   globalMiddlewares: Handler[],
-  sequelize: Sequelize
+  sequelize: Sequelize,
 ): Router {
   controllers.forEach((Ctrl) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,7 +26,7 @@ export default function controllersToRoutes(
       const action = controller[member];
       const routeProperties: RouterPropertiesType = Reflect.getOwnMetadata(
         member,
-        prototype
+        prototype,
       );
 
       if (action && Reflect.getOwnMetadata(member, prototype)) {
@@ -51,7 +51,7 @@ export default function controllersToRoutes(
         router[httpVerb](
           `${basePath}${path}`,
           compose(middlewares.map((middleware) => handlerWrapper(middleware))),
-          handlerWrapper(action)
+          handlerWrapper(action),
         );
       }
     });
