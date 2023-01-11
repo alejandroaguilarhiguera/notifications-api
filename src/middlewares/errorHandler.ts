@@ -4,7 +4,7 @@ import { ValidationErrorItem } from "sequelize";
 import { RequestError } from "../types/RequestError";
 
 const cleanErrors = (
-  errors: ValidationErrorItem[]
+  errors: ValidationErrorItem[],
 ): { message: string; field: string; value: string }[] =>
   errors.map(({ message, path, value }) => ({ message, field: path, value }));
 
@@ -12,7 +12,7 @@ export default (
   e: RequestError,
   req: Request,
   res: Response,
-  next?: NextFunction // eslint-disable-line @typescript-eslint/no-unused-vars
+  next?: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Response => {
   if (process.env.NODE_ENV !== "test") {
     console.error("ErrorHandler", { e });

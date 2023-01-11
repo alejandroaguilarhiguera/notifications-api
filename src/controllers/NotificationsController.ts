@@ -20,17 +20,17 @@ import joiValidation from "../middlewares/joiValidation";
 @Controller("notifications")
 @ControllerMiddleware([
   /**
-   * @name loadCollection
+   * @name loadNotification
    * @description
    * Find a notification by id, if do not found the notification so send a not found message
    * @param req
    * @param res
    * @param next
    */
-  async function loadCollection(
+  async function loadNotification(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const { id } = req.params;
     if (id) {
@@ -47,7 +47,7 @@ import joiValidation from "../middlewares/joiValidation";
     next();
   },
 ])
-export default class CollectionsController extends BaseController {
+export default class NotificationsController extends BaseController {
   /**
    * @api {get} /notifications
    * @description Get all notifications of system

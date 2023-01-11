@@ -16,7 +16,7 @@ function validateObject(
   data: { [key: string]: string | number },
   label: string,
   schema: Schema,
-  options?: ValidationOptions
+  options?: ValidationOptions,
 ): void {
   // Skip validation if no schema is provided
   if (schema) {
@@ -59,7 +59,7 @@ const joiValidation =
     const defaultValidateKeys = ["body", "query", "params", "headers"];
     const needValidateKeys = intersection(
       defaultValidateKeys,
-      Object.keys(selectedSchema)
+      Object.keys(selectedSchema),
     );
     if (needValidateKeys.length < 1) {
       throw new Error(`Invalid schema - ${req.url}`);
@@ -70,7 +70,7 @@ const joiValidation =
       req.headers as { [key: string]: string | number },
       "Headers",
       selectedSchema.headers,
-      { allowUnknown: true }
+      { allowUnknown: true },
     );
 
     // Abort Early doesn't stop joi validate at first error, so it returns all failed validations
@@ -80,7 +80,7 @@ const joiValidation =
     validateObject(
       req.query as { [key: string]: string | number },
       "URL Query",
-      selectedSchema.query
+      selectedSchema.query,
     );
     validateObject(req.body, "Body", selectedSchema.body, options);
 

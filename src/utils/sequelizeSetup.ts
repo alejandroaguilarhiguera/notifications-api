@@ -15,7 +15,7 @@ function loadModels(sequelize: Sequelize): {
   Object.keys(initializedModels).forEach((modelName) => {
     if (initializedModels[modelName].associate) {
       initializedModels[modelName].associate(
-        initializedModels as typeof Models
+        initializedModels as typeof Models,
       );
     }
   });

@@ -48,17 +48,17 @@ function getDefaultActionPath(action: string): string {
 
 function helperForRoutes(
   httpVerb: RouterPropertiesType["httpVerb"],
-  path?: string
+  path?: string,
 ): MethodDecorator {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: any,
     propertyKey: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): PropertyDescriptor | undefined => {
     let routeProperties: Partial<RouterPropertiesType> = Reflect.getOwnMetadata(
       propertyKey,
-      target
+      target,
     );
     if (!routeProperties) {
       routeProperties = { ...defaultRouterProperties };
@@ -99,7 +99,7 @@ export function Delete(path?: string): MethodDecorator {
 export function Controller(path?: string): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <TFunction extends { name: string; prototype: any }>(
-    target: TFunction
+    target: TFunction,
   ): TFunction => {
     const controllerPath = `/${
       path || camelToKebab(target.name.replace("Controller", ""))
@@ -107,18 +107,18 @@ export function Controller(path?: string): ClassDecorator {
     Reflect.defineMetadata(
       ClassKeys.BasePath,
       controllerPath,
-      target.prototype
+      target.prototype,
     );
     return target;
   };
 }
 
 export function ControllerMiddleware(
-  middleware: Handler | Handler[]
+  middleware: Handler | Handler[],
 ): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <TFunction extends { name: string; prototype: any }>(
-    target: TFunction
+    target: TFunction,
   ): TFunction => {
     Reflect.defineMetadata(ClassKeys.Middleware, middleware, target.prototype);
     return target;
@@ -128,7 +128,7 @@ export function ControllerMiddleware(
 export function ControllerOptions(options: RouterOptions): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <TFunction extends { name: string; prototype: any }>(
-    target: TFunction
+    target: TFunction,
   ): TFunction => {
     Reflect.defineMetadata(ClassKeys.Options, options, target.prototype);
     return target;
@@ -140,11 +140,11 @@ export function Middleware(middleware: Handler[]): MethodDecorator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: any,
     propertyKey?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): PropertyDescriptor | void => {
     let routeProperties = Reflect.getOwnMetadata(
       propertyKey,
-      target
+      target,
     ) as RouterPropertiesType;
     if (!routeProperties) {
       routeProperties = { ...defaultRouterProperties };
@@ -164,7 +164,7 @@ export function DisableGlobalMiddlewares(): MethodDecorator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: any,
     propertyKey?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any,consistent-return
   ): PropertyDescriptor | void => {
     const routeProperties = Reflect.getOwnMetadata(propertyKey, target) || {};
@@ -183,7 +183,7 @@ export function DisableControllerMiddlewares(): MethodDecorator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: any,
     propertyKey?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): PropertyDescriptor | void => {
     const routeProperties = Reflect.getOwnMetadata(propertyKey, target) || {};
     routeProperties.disableControllerMiddlewares = true;
@@ -201,7 +201,7 @@ export function DisableMiddlewares(): MethodDecorator {
     // eslint-disable-next-line consistent-return,@typescript-eslint/no-explicit-any
     target: any,
     propertyKey?: string | symbol,
-    descriptor?: PropertyDescriptor
+    descriptor?: PropertyDescriptor,
   ): PropertyDescriptor | void => {
     const routeProperties = Reflect.getOwnMetadata(propertyKey, target) || {};
     routeProperties.disableGlobalMiddleware = true;

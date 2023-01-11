@@ -4,6 +4,7 @@
     "airbnb-base",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
     "prettier"
   ],
   "plugins": ["jest", "@typescript-eslint", "security"],
@@ -56,6 +57,7 @@
       }
     ],
     "import/no-named-as-default-member": 2,
+    "import/no-extraneous-dependencies": 0,
     "lines-between-class-members": 0,
     "max-len": [1, 100, 2, {"ignoreComments": true}],
     "no-console": ["error", {"allow": ["error", "warn", "info"]}],
