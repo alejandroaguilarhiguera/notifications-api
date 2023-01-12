@@ -9,19 +9,17 @@ const router = asyncify<Router>(Router());
 
 export default async function api(
   sequelize: Sequelize,
-  globalMiddlewares: Handler[] = []
+  globalMiddlewares: Handler[] = [],
 ): Promise<Router> {
   controllersToRoutes(router, globalMiddlewares, sequelize);
 
   // WELCOME REQUEST
   router.get(
     "/",
-    handlerWrapper(async function action(req, res) {
-      return res.send({
+    handlerWrapper(async (req, res) => res.send({
         version: "1.0",
         message: "Welcome to Notification API.",
-      });
-    })
+      })),
   );
 
 

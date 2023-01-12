@@ -1,7 +1,6 @@
-import express, { Request, Router, Application } from "express";
+import express, { Router, Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import path from "path";
 import compression from "compression";
 import chalk from "chalk";
 import asyncify from "express-asyncify";
@@ -19,7 +18,7 @@ export default class Server {
 
   constructor() {
     this.startDate = Date.now();
-    this.app = asyncify(express()) as any;
+    this.app = asyncify(express()) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
     this.config();
   }
 
@@ -46,13 +45,13 @@ export default class Server {
       if (NODE_ENV !== "test") {
         console.info("");
         console.info(
-          chalk.yellow.bgBlack(`${req.method} - ${req.originalUrl} `)
+          chalk.yellow.bgBlack(`${req.method} - ${req.originalUrl} `),
         );
         console.info("");
       }
       next();
     });
-    this.app.use((req: any, res, next) => {
+    this.app.use((req: any, res, next) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       if (typeof req.locals === "undefined") {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -76,14 +75,14 @@ export default class Server {
     this.app.listen(port, () => {
       console.info(
         chalk.black.bgCyanBright(` >> API ready on http://localhost:${port} `),
-        `in ${(Date.now() - this.startDate) / 1000} seconds`
+        `in ${(Date.now() - this.startDate) / 1000} seconds`,
       );
     });
   }
 
   public async initialize(): Promise<Application> {
     process.on("uncaughtException", (error) =>
-      handleFatalError(error, this.app)
+      handleFatalError(error, this.app),
     );
     process.on("unhandledRejection", handleRejection);
     try {

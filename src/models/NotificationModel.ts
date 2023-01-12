@@ -2,15 +2,13 @@ import {
   Sequelize,
   DataTypes,
   Optional,
-  Association,
-  HasManyAddAssociationMixin,
-  HasManyGetAssociationsMixin,
 } from "sequelize";
 import { Moment } from "moment";
 import { AppModel } from "../types/AppModel";
 
-interface NotificationAttributes {
+export interface NotificationAttributes {
   readonly id: number;
+  category: "sports" | "finance" | "movies";
   channel: "sms" | "email" | "pushNotification";
   message: string;
   UserId: string;
@@ -29,6 +27,7 @@ export class Notification
   implements NotificationAttributes
 {
   public readonly id: NotificationAttributes["id"];
+  public category: NotificationAttributes["category"];
   public channel: NotificationAttributes["channel"];
   public message: NotificationAttributes["message"];
   public UserId: NotificationAttributes["UserId"];
@@ -49,6 +48,13 @@ export default function setupModel(sequelize: Sequelize): typeof Notification {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
+      },
+      category: {
+        type: DataTypes.ENUM("sports", "finance", "movies"),
+        allowNull: false,
+        validate: {
+          notEmpty: { msg: "The category of notification is required." },
+        },
       },
       channel: {
         type: DataTypes.ENUM("sms", "email", "pushNotification"),
@@ -94,7 +100,7 @@ export default function setupModel(sequelize: Sequelize): typeof Notification {
     },
     {
       sequelize,
-    }
+    },
   );
 
   Notification.associate = function assoc(): void {
