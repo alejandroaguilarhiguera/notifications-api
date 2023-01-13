@@ -11,7 +11,7 @@ const customersSchema: CustomSchema = {
         .valid("sms", "email", "pushNotification")
         .required(),
       message: Joi.string().required(),
-      UserId: Joi.number().allow(null).optional(),
+      UserId: Joi.number().required(),
     }),
   },
   patch: {

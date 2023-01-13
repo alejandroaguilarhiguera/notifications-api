@@ -2,7 +2,11 @@ import SuperTest from "supertest";
 import Joi from "@hapi/joi";
 import { faker } from "@faker-js/faker";
 import Server from "../../Server";
-import { NotificationInstance, Notification, NotificationAttributes } from "../../models/NotificationModel";
+import {
+  NotificationInstance,
+  Notification,
+  NotificationAttributes,
+} from "../../models/NotificationModel";
 
 let agent: SuperTest.SuperTest<SuperTest.Test>;
 
@@ -19,15 +23,15 @@ beforeAll(async () => {
   agent = SuperTest.agent(app.listen());
 });
 
+let notification: NotificationInstance;
 describe("Notification controller", () => {
-  let notification: NotificationInstance;
   
   const newNotificationSchema = Joi.object().keys({
     id: Joi.number().required(),
     category: Joi.string().required().valid("sports", "finance", "movies"),
     channel: Joi.string().required().valid("sms", "email", "pushNotification"),
     message: Joi.string().required(),
-    UserId: Joi.number().allow(null),
+    UserId: Joi.number().required(),
     createdBy: Joi.number().allow(null),
     updatedBy: Joi.number().allow(null),
     deletedAt: Joi.string().allow(null).optional(),
@@ -54,6 +58,7 @@ describe("Notification controller", () => {
       category: "sports",
       channel: "sms",
       message: faker.lorem.paragraphs(),
+      UserId: 1,
     };
     const response = await agent.post(route).set(header).send(newNotification);
     expect(response.statusCode).toBe(201);
@@ -65,6 +70,7 @@ describe("Notification controller", () => {
     expect(response.body.notification.category).toBe(newNotification.category);
     expect(response.body.notification.channel).toBe(newNotification.channel);
     expect(response.body.notification.message).toBe(newNotification.message);
+    expect(response.body.notification.UserId).toBe(newNotification.UserId);
   });
 
   test("Show a notification", async () => {
@@ -103,8 +109,8 @@ describe("Notification controller", () => {
       .delete([route, notification.id].join('/'))
       .set(header);
       expect(response.statusCode).toBe(200);
-      notification = await Notification.findByPk(notification.id, { paranoid: false });
-      expect(notification.deletedAt).not.toBe(null);
+      const currentNotification = await Notification.findByPk(notification.id, { paranoid: false });
+      expect(currentNotification.deletedAt).not.toBeNull();
     });
   });
 
@@ -117,8 +123,8 @@ describe("Notification controller", () => {
       error && console.error(JSON.stringify(error));
       expect(error).toBe(undefined);
       const notifications: NotificationAttributes[] = response.body;
-      notifications.forEach((notification) => {
-        expect(notification.deletedAt).not.toBe(null);
+      notifications.forEach(({deletedAt}) => {
+        expect(deletedAt).not.toBeNull();
       });
     });
   });
@@ -134,8 +140,8 @@ describe("Notification controller", () => {
       .put([route, 'restore', notification.id].join('/'))
       .set(header);
       expect(response.statusCode).toBe(200);
-      notification = await Notification.findByPk(notification.id, { paranoid: false });
-      expect(notification.deletedAt).toBeNull();
+      const currentNotification = await Notification.findByPk(notification.id, { paranoid: false });
+      expect(currentNotification.deletedAt).toBeNull();
     });
 
     afterAll(async () => { // sure that notification will be restored
