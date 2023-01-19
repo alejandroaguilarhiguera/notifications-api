@@ -5,13 +5,17 @@ import {
 } from "sequelize";
 import { Moment } from "moment";
 import { AppModel } from "../types/AppModel";
+import SMSHandler from "../utils/SMSHandler";
+import PushNotificationHandler from "../utils/PushNotificationHandler";
+import MailHandler from "../utils/MailHandler";
+import { USERS } from '../config';
 
 export interface NotificationAttributes {
   readonly id: number;
   category: "sports" | "finance" | "movies";
   channel: "sms" | "email" | "pushNotification";
   message: string;
-  UserId: string;
+  UserId: number;
   updatedBy: number;
   createdBy: number;
   readonly createdAt: Date | string | number | Moment;
@@ -107,6 +111,32 @@ export default function setupModel(sequelize: Sequelize): typeof Notification {
     // FIXME: We don'n have a Users table yet
     //   this.belongsTo(User);
   };
+
+  Notification.addHook('afterCreate', async (notification) => {
+    const channel = notification.get('channel') as string;
+    const message = notification.get('message') as string;
+    const UserId = notification.get('UserId') as number;
+    console.info("🚀 ~ file: NotificationModel.ts:119 ~ Notification.addHook ~ UserId", UserId)
+
+    if (channel === 'sms') {
+      const smsHandler = new SMSHandler();
+      await smsHandler.send(USERS.find(({id}) => id === UserId).phoneNumber, message);
+    } else if(channel === 'pushNotification') {
+      const pushNotificationHandler = new PushNotificationHandler({
+        title: 'push notification',
+        body: message,
+        token: `token_${USERS.find(({id}) => id === UserId).email}`,
+      });
+      await pushNotificationHandler.send();
+    } else if (channel === 'email') {
+      const { email } = USERS.find(({id}) => id === UserId);
+      const mailHandler = new MailHandler({
+        subject: 'Notification',
+        email,
+      });
+      await mailHandler.send('notificationsTemplate');
+    }
+  })
 
   return Notification;
 }
