@@ -153,6 +153,7 @@ describe("Notification controller", () => {
     let currentNotification: NotificationInstance;
     beforeAll(async () => { // create a new notification to be destroyed
       currentNotification = await Notification.create({
+        UserId: 1,
         category: 'sports',
         channel: 'pushNotification',
         message: faker.lorem.text(),
