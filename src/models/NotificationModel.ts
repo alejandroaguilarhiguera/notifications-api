@@ -112,28 +112,45 @@ export default function setupModel(sequelize: Sequelize): typeof Notification {
     //   this.belongsTo(User);
   };
 
-  Notification.addHook('afterCreate', async (notification) => {
-    const channel = notification.get('channel') as string;
+  Notification.addHook('beforeCreate', async (notification) => {
+    const category = notification.get('category') as NotificationAttributes["category"];
+    const channel = notification.get('channel') as NotificationAttributes["channel"];
     const message = notification.get('message') as string;
-    const UserId = notification.get('UserId') as number;
-
+    // const UserId = notification.get('UserId') as number;
+    const users = USERS
+    .filter(({subscribed}) => subscribed.includes(category))
+    .filter(({channels}) => channels.includes(channel));
     if (channel === 'sms') {
-      const smsHandler = new SMSHandler();
-      await smsHandler.send(USERS.find(({id}) => id === UserId).phoneNumber, message);
+      // const smsHandler = new SMSHandler();
+      await Promise.all(
+        users.map((user) => (
+          new SMSHandler().send(user.phoneNumber, message)
+        )),
+      );
+      // await smsHandler.send(users.find(({ id }) => id === UserId).phoneNumber, message);
     } else if(channel === 'pushNotification') {
-      const pushNotificationHandler = new PushNotificationHandler({
-        title: 'push notification',
-        body: message,
-        token: `token_${USERS.find(({id}) => id === UserId).email}`,
-      });
-      await pushNotificationHandler.send();
+      const pushNotificationsHandler = users.map(({email}) => (
+        new PushNotificationHandler({
+          title: 'push notification',
+          body: message,
+          token: `token_${email}`,
+        })
+      ));
+      await Promise.all(
+        pushNotificationsHandler.map(
+          (pushNotificationHandler) => pushNotificationHandler.send(),
+        ),
+      );
     } else if (channel === 'email') {
-      const { email } = USERS.find(({id}) => id === UserId);
-      const mailHandler = new MailHandler({
-        subject: 'Notification',
-        email,
-      });
-      await mailHandler.send('notificationsTemplate');
+      const mailsHandler = users.map(({ email }) => (
+        new MailHandler({
+          subject: 'Notification',
+          email,
+        })
+      ));
+      await Promise.all(
+        mailsHandler.map((mailHandler) => mailHandler.send('notificationsTemplate')),
+      );
     }
   })
 
