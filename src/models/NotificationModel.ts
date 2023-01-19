@@ -116,7 +116,6 @@ export default function setupModel(sequelize: Sequelize): typeof Notification {
     const channel = notification.get('channel') as string;
     const message = notification.get('message') as string;
     const UserId = notification.get('UserId') as number;
-    console.info("🚀 ~ file: NotificationModel.ts:119 ~ Notification.addHook ~ UserId", UserId)
 
     if (channel === 'sms') {
       const smsHandler = new SMSHandler();
