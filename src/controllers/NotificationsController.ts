@@ -12,14 +12,10 @@ import {
   ControllerMiddleware,
   DisableGlobalMiddlewares,
 } from "../types/decorators";
-import { USERS } from '../config';
 import { BaseController } from "../types/BaseController";
 import { Notification } from "../models/NotificationModel";
 import notificationsSchema from "../schemas/notifications.schema";
 import joiValidation from "../middlewares/joiValidation";
-import SMSHandler from "../utils/SMSHandler";
-import PushNotificationHandler from "../utils/PushNotificationHandler";
-import MailHandler from "../utils/MailHandler";
 
 
 @Controller("notifications")
@@ -89,38 +85,8 @@ export default class NotificationsController extends BaseController {
   @Post()
   @Middleware([joiValidation(notificationsSchema.post)])
   private async add(req: Request, res: Response): Promise<Response> {
-    const { channel, message, UserId } = req.body;
-    const transaction = await this.sequelize.transaction();
-    try {
-      const notification = await Notification.create(req.body, {
-        transaction,
-      });
-      if (channel === 'sms') {
-        const smsHandler = new SMSHandler();
-        await smsHandler.send(USERS.find(({id}) => id === UserId).phoneNumber, message);
-      } else if(channel === 'pushNotification') {
-        const pushNotificationHandler = new PushNotificationHandler({
-          title: 'push notification',
-          body: message,
-          token: `token_${USERS.find(({id}) => id === UserId).email}`,
-        });
-        await pushNotificationHandler.send();
-      } else if (channel === 'email') {
-        const { email } = USERS.find(({id}) => id === UserId);
-        const mailHandler = new MailHandler({
-          subject: 'Notification',
-          email,
-        });
-        await mailHandler.send('notificationsTemplate');
-      }
-      await transaction.commit();
-      return res
-        .status(201)
-        .json({ notification, message: "The notification was sent" });
-    } catch (e) {
-      await transaction.rollback();
-      throw e;
-    }
+    const notification = await Notification.create(req.body);
+    return res.status(201).json({ notification, message: "The notification was sent" });
   }
 
   /**
